@@ -148,6 +148,8 @@ int main(int argc, char * argv[])
     fgets(buff,bdim,fp);
     sscanf(buff,"%lg",&x[n]);
   }
+  fclose(fp); fp = NULL;
+
 
   // Compute area
   for (n=0; n < nn; n++)
@@ -295,7 +297,24 @@ int main(int argc, char * argv[])
         ans = 0;
       }
     }
+  } // end solver iteration
+
+
+
+  filename[0] = '\0';
+  strcat(filename,"Hello");
+  if ((fp=fopen(filename,"w")) == NULL){
+    printf("\nCould not open file <%s>\n",filename);
+    exit(0);
   }
+
+
+  // Write solution to file
+  for (i=0; i <= nn-1; i++)
+  {
+    fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",i,rho[i],V[i],T[i],P[i],Mv[i]);
+  }
+  fclose(fp); fp = NULL;
 
 
 
