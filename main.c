@@ -310,7 +310,8 @@ int main(int argc, char * argv[])
 
 
   // Write solution to file
-  fprintf(fp,"%4s, %7s, %7s, %7s, %7s, %7s, %7s\n","node","      A","    rho","      V","      T","      P","     M");
+    fprintf(fp,"%4s, %7s, %7s, %7s, %7s, %7s, %7s\n",
+        "node","    A","    rho","      V","      T","      P","      M");
   for (i=0; i <= nn-1; i++)
   {
     fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",i,A[i],rho[i],V[i],T[i],P[i],Mv[i]);

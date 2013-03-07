@@ -160,7 +160,9 @@ pip-log.txt
 .mr.developer.cfg
 
 # Mac crap
-.DS_Store
-flux
+
+# my working files
+soln.txt
 *.o
+flux
 *.~
