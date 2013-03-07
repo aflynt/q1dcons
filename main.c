@@ -6,6 +6,7 @@
  *  MacCormack 1D Euler Subsonic-Supersonic Nozzle
  *  Tue Mar  5 19:07:54 EST 2013
  */
+int  writeSoln(FILE *fp,const int nn, double * A,double * rho, double * V, double *T, double *P,double * M);
 
 int main(int argc, char * argv[])
 {
@@ -311,13 +312,7 @@ int main(int argc, char * argv[])
 
 
   // Write solution to file
-    fprintf(fp,"%4s, %7s, %7s, %7s, %7s, %7s, %7s\n",
-        "node","    A","    rho","      V","      T","      P","      M");
-  for (i=0; i <= nn-1; i++)
-  {
-    fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
-                  i,  A[i],rho[i], lV[i],  T[i],  P[i],  Mv[i]);
-  }
+  writeSoln(fp,nn,A,rho,V,T,P,Mv);
   fclose(fp); fp = NULL;
 
 
@@ -348,3 +343,20 @@ int main(int argc, char * argv[])
   return 0;
 
 }// end main
+
+int  writeSoln(FILE *fp,const int nn, double * A,double * rho, double * V, double *T, double *P,double * M)
+{
+  int i;
+    fprintf(fp,"%4s, %7s, %7s, %7s, %7s, %7s, %7s\n",
+        "node","    A","    rho","      V","      T","      P","      M");
+  for (i=0; i <= nn-1; i++)
+  {
+    fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
+                  i,  A[i],rho[i],  V[i],  T[i],  P[i],  M[i]);
+  }
+
+  return 0;
+}
+
+
+
