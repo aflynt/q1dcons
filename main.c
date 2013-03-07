@@ -284,7 +284,8 @@ int main(int argc, char * argv[])
     }
 
 
-    printf("%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",n,rho[15],V[15],T[15],P[15],Mv[15]);
+    printf("%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
+              n,rho[15],V[15],T[15],P[15],Mv[15]);
 
     // Continue?
     if(n== maxiter)
@@ -314,7 +315,8 @@ int main(int argc, char * argv[])
         "node","    A","    rho","      V","      T","      P","      M");
   for (i=0; i <= nn-1; i++)
   {
-    fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",i,A[i],rho[i],V[i],T[i],P[i],Mv[i]);
+    fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
+                  i,  A[i],rho[i], lV[i],  T[i],  P[i],  Mv[i]);
   }
   fclose(fp); fp = NULL;
 
