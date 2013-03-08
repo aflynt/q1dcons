@@ -6,7 +6,8 @@
  *  MacCormack 1D Euler Subsonic-Supersonic Nozzle
  *  Tue Mar  5 19:07:54 EST 2013
  */
-int  writeSoln(FILE *fp,const int nn, double * A,double * rho, double * V, double *T, double *P,double * M);
+//int  writeSoln(FILE *fp,const int nn, double * A,double * rho, double * V, double *T, double *P,double * M);
+int  writeSoln(FILE *fp,const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M);
 
 int main(int argc, char * argv[])
 {
@@ -17,6 +18,8 @@ int main(int argc, char * argv[])
   // File variables
   char filename[32];
   filename[0]='\0';
+  char outfile[32];
+  outfile[0]='\0';
   FILE *fp = NULL;
   int bdim = 80;
   char buff[bdim];
@@ -42,13 +45,6 @@ int main(int argc, char * argv[])
   double *dVdtb = NULL;
   double *dTdtb = NULL;
 
-  // Flow field variables
-#if 0
-  double Q1,Q2,Q3,Q4;
-  double f1,f2,f3,f4;
-  double fp1, fp2, fp3, fp4;
-  double fm1, fm2, fm3, fm4;
-#endif
 
   double nx,ny;
   double M  = 0.0;
@@ -59,7 +55,16 @@ int main(int argc, char * argv[])
   double alpha = 0.0;
   double mindt = 100.0;
 
+  int maxiter = 1400;
+  int ask = 0;
+  int ans = 0;
+
+  // Flow field variables
 #if 0
+  double Q1,Q2,Q3,Q4;
+  double f1,f2,f3,f4;
+  double fp1, fp2, fp3, fp4;
+  double fm1, fm2, fm3, fm4;
   double **DFP = NULL;
   double *DFPdata = NULL;
   double **DFM = NULL;
@@ -67,32 +72,32 @@ int main(int argc, char * argv[])
 
   alloc_2D(&DFP,&DFPdata, 4, 4);
   alloc_2D(&DFM,&DFMdata, 4, 4);
+  // Calculate Q vector
+  //initQ( &Q1, &Q2, &Q3, &Q4, M, &alpha);
 #endif
 
+// Parse Arguments
 // ######################### Section Break ###########################
-// feed nozzle shape
-
 
 
   // get Command line args
-  parse_args(argc,argv,&nx,&ny,&M,&alpha,filename);
+  parse_args(argc,argv,&maxiter,&ask,&M,&alpha,filename,outfile);
 
-  // Calculate Q vector
-  //initQ( &Q1, &Q2, &Q3, &Q4, M, &alpha);
 
-// ######################### Section Break ###########################
-// Read file
-  /* Open 2D grid file for reading */
+  // Open 2D grid file for reading
   if ((fp=fopen(filename,"r")) == NULL){
     printf("\nCould not open file <%s>\n",filename);
     exit(0);
   }
 
-  /* Read number of grid points */
+  // Read number of grid points
   fgets(buff,bdim,fp); // Header text from file
   fgets(buff,bdim,fp); // Line containing number of grid points
   sscanf(buff,"%d",&nn);
   printf("Number of grid points = %d\n",nn);
+
+// Allocate memory
+// ######################### Section Break ###########################
 
   if ((rho   = (double*)malloc(nn*sizeof(double))) == NULL){
     printf("\nCould not allocate memory for rho");exit(0);}
@@ -174,8 +179,6 @@ int main(int argc, char * argv[])
   }
 
 
-  int maxiter = 1000;
-  int ans = 0;
 
   // Solver Loop
   for (n = 1; n <= maxiter; n++)
@@ -289,9 +292,9 @@ int main(int argc, char * argv[])
               n,rho[15],V[15],T[15],P[15],Mv[15]);
 
     // Continue?
-    if(n== maxiter)
+    if(n == maxiter && ask)
     {
-      printf("Continue? : \n");
+      printf("How many more iterations? : \n");
       scanf("%d",&ans);
       if(ans > 0)
       {
@@ -303,19 +306,16 @@ int main(int argc, char * argv[])
 
 
 
-  filename[0] = '\0';
-  strcat(filename,"soln.txt");
-  if ((fp=fopen(filename,"w")) == NULL){
-    printf("\nCould not open file <%s>\n",filename);
+  // Open file for write
+  if ((fp=fopen(outfile,"w")) == NULL){
+    printf("\nCould not open file <%s>\n",outfile);
     exit(0);
   }
 
-
   // Write solution to file
-  writeSoln(fp,nn,A,rho,V,T,P,Mv);
+  printf("writing to file: %s\n",outfile);
+  writeSoln(fp,nn,x,A,rho,V,T,P,Mv);
   fclose(fp); fp = NULL;
-
-
 
 
   // Free memory
@@ -344,15 +344,15 @@ int main(int argc, char * argv[])
 
 }// end main
 
-int  writeSoln(FILE *fp,const int nn, double * A,double * rho, double * V, double *T, double *P,double * M)
+int  writeSoln(FILE *fp,const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M)
 {
   int i;
-    fprintf(fp,"%4s, %7s, %7s, %7s, %7s, %7s, %7s\n",
-        "node","    A","    rho","      V","      T","      P","      M");
+    fprintf(fp,"%4s, %7s, %7s, %7s, %7s, %7s, %7s, %7s\n",
+        "node","    x","    A","    rho","      V","      T","      P","      M");
   for (i=0; i <= nn-1; i++)
   {
-    fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
-                  i,  A[i],rho[i],  V[i],  T[i],  P[i],  M[i]);
+    fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
+                  i+1, x[i], A[i],rho[i],  V[i],  T[i],  P[i],  M[i]);
   }
 
   return 0;

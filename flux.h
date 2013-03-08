@@ -61,8 +61,9 @@ int prn_jac(double ** DFP, double ** DFM);
 
 int prn_tri(int **tri_conn, int nt);
 
-int parse_args(char argc, char * argv[],double * nx,double * ny,
-               double * M, double * alpha, char fname[]);
+int parse_args(char argc, char * argv[],int * maxiter, int * ask,
+               double * M, double * alpha, char fname[], char ofile[]);
+
 
 int help(void);
 int open_file(char * filename, FILE ** fp);

@@ -215,8 +215,8 @@ int write_gnuplot(char buff[],char filename[],FILE *fp,int **tri_conn,int nt,dou
 
 // ################# Begin Function ###########################
 // ################# Begin Function ###########################
-int parse_args(char argc, char * argv[],double * nx,double * ny,
-               double * M, double * alpha, char fname[])
+int parse_args(char argc, char * argv[],int * maxiter, int * ask,
+               double * M, double * alpha, char fname[], char ofile[])
 {
   int i;
   int print = 0;
@@ -224,13 +224,18 @@ int parse_args(char argc, char * argv[],double * nx,double * ny,
   int mach_flag = 0;
   int angle_flag = 0;
   int file_flag = 0;
+  int ofile_flag = 0;
 
   // iterate over arguments
   for (i = 1; i < (argc - 1); i++)
   {
-    if (strcmp("-nxy", argv[i]) == 0){
-      (*nx) = atof(argv[++i]);
-      (*ny) = atof(argv[++i]);
+    if (strcmp("-n", argv[i]) == 0){
+      (*maxiter) = atoi(argv[++i]);
+      norm_flag = 1;
+      continue;
+    }
+    if (strcmp("-a", argv[i]) == 0){
+      (*ask) = atoi(argv[++i]);
       norm_flag = 1;
       continue;
     }
@@ -247,6 +252,11 @@ int parse_args(char argc, char * argv[],double * nx,double * ny,
     if (strcmp("-f", argv[i]) == 0){
       strcat(fname,argv[++i]);
       file_flag = 1;
+      continue;
+    }
+    if (strcmp("-o", argv[i]) == 0){
+      strcat(ofile,argv[++i]);
+      ofile_flag = 1;
       continue;
     }
     if (strcmp("-P", argv[i]) == 0) {
@@ -274,6 +284,9 @@ int parse_args(char argc, char * argv[],double * nx,double * ny,
     printf("Enter 2D grid input filename\n");
     scanf("%s", fname);
   }
+
+  if (ofile_flag < 1)
+    strcat(ofile,"csvsoln.csv");
 
   return 0;
 }
