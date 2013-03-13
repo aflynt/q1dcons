@@ -225,10 +225,17 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask,
   int angle_flag = 0;
   int file_flag = 0;
   int ofile_flag = 0;
+  int help_flag = 0;
+  printf("number of args = %d\n", argc);
 
   // iterate over arguments
-  for (i = 1; i < (argc - 1); i++)
+  for (i = 1; i < (argc); i++)
   {
+    printf("argv[%d] = %s\n",i,argv[i]);
+    if (strcmp("-h", argv[i]) == 0) {
+      help_flag = 1;
+      continue;
+    }
     if (strcmp("-n", argv[i]) == 0){
       (*maxiter) = atoi(argv[++i]);
       norm_flag = 1;
@@ -278,6 +285,18 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask,
     scanf("%lf %lf", nx, ny);
   }
 #endif
+  //if (1 )
+  if (help_flag || argc < 2)
+  {
+    printf("Quasi-1D Euler solver\n");
+    printf("Options:\n");
+    printf("n = num iters\n");
+    printf("a = ask to continue\n");
+    printf("f = input  grid file\n");
+    printf("o = output grid file\n");
+    //printf("P = Print\n");
+    printf("h = help\n");
+  }
 
   if (file_flag < 1)
   {
