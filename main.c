@@ -6,8 +6,6 @@
  *  MacCormack 1D Euler Subsonic-Supersonic Nozzle
  *  Tue Mar  5 19:07:54 EST 2013
  */
-//int  writeSoln(FILE *fp,const int nn, double * A,double * rho, double * V, double *T, double *P,double * M);
-int  writeSoln(FILE *fp,const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M);
 
 int main(int argc, char * argv[])
 {
@@ -54,10 +52,12 @@ int main(int argc, char * argv[])
   double gma = 1.4;
   double alpha = 0.0;
   double mindt = 100.0;
+  double Pe = 0.93;
 
   int maxiter = 1400;
   int ask = 0;
   int ans = 0;
+  int ProblemType = 0;
 
   // Flow field variables
 #if 0
@@ -81,7 +81,10 @@ int main(int argc, char * argv[])
 
 
   // get Command line args
-  parse_args(argc,argv,&maxiter,&ask,&M,&alpha,filename,outfile);
+  parse_args(argc,argv,&maxiter,&ask,&ProblemType,&M,&alpha,filename,outfile);
+
+  //printf("problem type = %d\n", ProblemType);
+  //exit(0);
 
 
   // Open 2D grid file for reading
@@ -133,54 +136,46 @@ int main(int argc, char * argv[])
     printf("\nCould not allocate memory for dVdtb");exit(0);}
   if ((dTdtb = (double*)malloc(nn*sizeof(double))) == NULL){
     printf("\nCould not allocate memory for dTdtb");exit(0);}
-  if ((x = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for X");
-    exit(0);
-  }
-  if ((A = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for A");
-    exit(0);
-  }
-  if ((lnA = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for lnA");
-    exit(0);
-  }
+  if ((x     = (double*)malloc(nn*sizeof(double))) == NULL){
+    printf("\nCould not allocate memory for X");exit(0);}
+  if ((A     = (double*)malloc(nn*sizeof(double))) == NULL){
+    printf("\nCould not allocate memory for A");exit(0);}
+  if ((lnA   = (double*)malloc(nn*sizeof(double))) == NULL){
+    printf("\nCould not allocate memory for lnA");exit(0);}
 
 
 
-  // Read grid nodes x-locations
+  // Read grid nodes x-locations and Area
   for (n=0; n < nn; n++)
   {
     fgets(buff,bdim,fp);
+    sscanf(buff,"%lg %lg",&x[n],&A[n]);
     sscanf(buff,"%lg",&x[n]);
+    //printf("From file: x = %f Area = %f\n", x[n], A[n]);
   }
   fclose(fp); fp = NULL;
 
-
-  // Compute area
+  // Compute Log area
   for (n=0; n < nn; n++)
   {
-    A[n] = 1.0 + 2.2*(x[n] - 1.5)*(x[n] - 1.5);
     lnA[n] = log(A[n]);
     //printf("pt %2d, ln(A) = %f\n", n, lnA[n]);
+    //A[n] = 1.0 + 2.2*(x[n] - 1.5)*(x[n] - 1.5);
+    //printf("%.15f %.15f\n", x[n], A[n]);
   }
 
 
   // Set IC
-  //printf("Initial Conditions\n");
-  //printf("           x/L   A/A*   rho/rho*   V/a0   T/T0\n");
-  for (n=0; n < nn; n++)
-  {
-    rho[n] = 1.0 - 0.3146*x[n];
-    T[n]   = 1.0 - 0.2314*x[n];
-    V[n]   = (0.1 + 1.09*x[n])*sqrt(T[n]);
-    P[n]   = rho[n]*T[n];
-   // printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n]);
-  }
+  if(ProblemType == 1)
+    setICsubsup(nn,x,A,rho,V,T,P);
+  else
+    setICsubsonic(nn,x,A,rho,V,T,P);
 
 
 
+  // ==========================================
   // Solver Loop
+  // ==========================================
   for (n = 1; n <= maxiter; n++)
   {
 
@@ -262,18 +257,27 @@ int main(int argc, char * argv[])
 
     // CORRECTOR COMPLETE
 
+    // =========
     // BCs
+    // =========
     // Inflow
+    // rho, T remain constant
     V[0] = 2.0*V[1] - V[2];
-    //printf("V1 = %f\n",V[0]);
-    //printf("V2 = %f\n",V[1]);
-    //printf("V3 = %f\n",V[2]);
-    //printf("pt %3d: %7.5f, %7.5f, %7.5f, %7.5f\n",0,rho[0],V[0],T[0],P[0]);
 
     // Outflow
-    rho[nn-1] = 2.0 * rho[nn-2] - rho[nn-3];
-      V[nn-1] = 2.0 *   V[nn-2] -   V[nn-3];
-      T[nn-1] = 2.0 *   T[nn-2] -   T[nn-3];
+    if(ProblemType == 1) // subsonic - supersonic
+    {
+    rho[nn-1] = 2.0 * rho[nn-2] - rho[nn-3]; //extrapolate rho'
+      V[nn-1] = 2.0 *   V[nn-2] -   V[nn-3]; //extrapolate V'
+      T[nn-1] = 2.0 *   T[nn-2] -   T[nn-3]; //extrapolate T'
+    }
+    else // subsonic P = specified for subsonic
+    {
+      P[nn-1] = Pe;                          //specify outlet pressure
+      T[nn-1] = 2.0 *   T[nn-2] -   T[nn-3]; //extrapolate T
+    rho[nn-1] = P[nn-1] / T[nn-1];           //extrapolate rho'= P/T
+      V[nn-1] = 2.0 *   V[nn-2] -   V[nn-3]; //extrapolate V
+    }
     //printf("pt %3d: %7.5f, %7.5f, %7.5f, %7.5f\n",i,rho[nn-1],V[nn-1],T[nn-1],P[nn-1]);
 
 
@@ -281,20 +285,35 @@ int main(int argc, char * argv[])
     //printf("pt %3s: %7s, %7s, %7s, %7s, %7s\n","  i","    rho","      V","      T","     P","     M");
 
     //Update P,M
-    for (i=0; i <= nn-1; i++)
+    if(ProblemType == 1) // subsonic - supersonic
     {
-      P[i]   = rho[i]*T[i];
-      Mv[i]  = V[i] / sqrt(T[i]);
+      for (i=0; i <= nn-1; i++)
+      {
+        P[i]   = rho[i]*T[i];       // Compute dependent P
+        Mv[i]  = V[i] / sqrt(T[i]); // Compute dependent M
+      }
+    }
+    else // subsonic
+    {
+      for (i=0; i < nn-1; i++)
+        P[i]   = rho[i]*T[i];       // only update internal Pressure values
+
+      for (i=0; i <= nn-1; i++)
+        Mv[i]  = V[i] / sqrt(T[i]); // compute M across whole field
     }
 
 
-    printf("%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
-              n,rho[15],V[15],T[15],P[15],Mv[15]);
+    // Print values at nozzle throat
+    printf(" %4d", n);
+    if (n %20 == 0)
+      putchar('\n');
+    //printf("%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
+    //          n,rho[15],V[15],T[15],P[15],Mv[15]);
 
     // Continue?
     if(n == maxiter && ask)
     {
-      printf("How many more iterations? : \n");
+      printf("How many more iterations?:>  ");
       scanf("%d",&ans);
       if(ans > 0)
       {
@@ -302,7 +321,13 @@ int main(int argc, char * argv[])
         ans = 0;
       }
     }
-  } // end solver iteration
+  }
+  // ======================
+  //  end solver iteration
+  // ======================
+
+  // Print soln to screen
+  printSoln(nn,x,A,rho,V,T,P,Mv);
 
 
 
@@ -315,6 +340,24 @@ int main(int argc, char * argv[])
   // Write solution to file
   printf("writing to file: %s\n",outfile);
   writeSoln(fp,nn,x,A,rho,V,T,P,Mv);
+  fclose(fp); fp = NULL;
+
+
+  // Open file for write
+  if ((fp=fopen("p.dat","w")) == NULL){printf("\nCould not open file <%s>\n","p.dat");exit(0);}
+  write1var(fp, nn,  x,  P);
+  fclose(fp); fp = NULL;
+
+  if ((fp=fopen("r.dat","w")) == NULL){printf("\nCould not open file <%s>\n","r.dat");exit(0);}
+  write1var(fp, nn,  x,  rho);
+  fclose(fp); fp = NULL;
+
+  if ((fp=fopen("T.dat","w")) == NULL){printf("\nCould not open file <%s>\n","T.dat");exit(0);}
+  write1var(fp, nn,  x,  T);
+  fclose(fp); fp = NULL;
+
+  if ((fp=fopen("v.dat","w")) == NULL){printf("\nCould not open file <%s>\n","v.dat");exit(0);}
+  write1var(fp, nn,  x,  V);
   fclose(fp); fp = NULL;
 
 
@@ -344,19 +387,38 @@ int main(int argc, char * argv[])
 
 }// end main
 
-int  writeSoln(FILE *fp,const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M)
-{
-  int i;
-    fprintf(fp,"%4s, %7s, %7s, %7s, %7s, %7s, %7s, %7s\n",
-        "node","    x","    A","    rho","      V","      T","      P","      M");
-  for (i=0; i <= nn-1; i++)
-  {
-    fprintf(fp,"%4d, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
-                  i+1, x[i], A[i],rho[i],  V[i],  T[i],  P[i],  M[i]);
-  }
 
-  return 0;
+
+int setICsubsup(int  nn,double * x,double * A,double * rho,double * V,double * T,double * P)
+{
+    int n;
+    printf("Setting Initial Conditions for Problem Type: Subsonic-supersonic\n");
+    //printf("           x/L   A/A*   rho/rho*   V/a0   T/T0   p/p0\n");
+
+    for (n=0; n < nn; n++)
+    {
+      rho[n] = 1.0 - 0.3146*x[n];
+      T[n]   = 1.0 - 0.2314*x[n];
+      V[n]   = (0.1 + 1.09*x[n])*sqrt(T[n]);
+      P[n]   = rho[n]*T[n];
+      //printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n], P[n]);
+    }
+    return n;
 }
 
+int setICsubsonic(int  nn,double * x,double * A,double * rho,double * V,double * T,double * P)
+{
+    int n;
+    printf("Setting Initial Conditions for Problem Type: Subsonic\n");
+    //printf("           x/L   A/A*   rho/rho*   V/a0   T/T0   p/p0\n");
 
-
+    for (n=0; n < nn; n++)
+    {
+      rho[n] = 1.0 - 0.023*x[n];
+      T[n]   = 1.0 - 0.009333*x[n];
+      V[n]   = 0.05 + 0.11*x[n];
+      P[n]   = rho[n]*T[n];
+      //printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n], P[n]);
+    }
+    return n;
+}

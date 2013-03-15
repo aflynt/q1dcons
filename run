@@ -1,1 +1,1 @@
-./flux -mach 1.5 -alpha 1.15 -f grid.dat
+./flux -f subarea.dat -p 2 -n 5000

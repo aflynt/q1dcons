@@ -215,7 +215,7 @@ int write_gnuplot(char buff[],char filename[],FILE *fp,int **tri_conn,int nt,dou
 
 // ################# Begin Function ###########################
 // ################# Begin Function ###########################
-int parse_args(char argc, char * argv[],int * maxiter, int * ask,
+int parse_args(char argc, char * argv[],int * maxiter, int * ask, int * ProblemType,
                double * M, double * alpha, char fname[], char ofile[])
 {
   int i;
@@ -226,47 +226,49 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask,
   int file_flag = 0;
   int ofile_flag = 0;
   int help_flag = 0;
-  printf("number of args = %d\n", argc);
+  //printf("number of args = %d\n", argc);
 
   // iterate over arguments
   for (i = 1; i < (argc); i++)
   {
-    printf("argv[%d] = %s\n",i,argv[i]);
+    //printf("argv[%d] = %s\n",i,argv[i]);
     if (strcmp("-h", argv[i]) == 0) {
       help_flag = 1;
       continue;
     }
     if (strcmp("-n", argv[i]) == 0){
-      (*maxiter) = atoi(argv[++i]);
+      (*maxiter) = atoi(argv[i+1]);
       norm_flag = 1;
       continue;
     }
     if (strcmp("-a", argv[i]) == 0){
-      (*ask) = atoi(argv[++i]);
+      //(*ask) = atoi(argv[i+1]);
+      (*ask)++;
       norm_flag = 1;
       continue;
     }
     if (strcmp("-mach", argv[i]) == 0){
-      (*M) = atof(argv[++i]);
+      (*M) = atof(argv[i+1]);
       mach_flag = 1;
       continue;
     }
     if (strcmp("-alpha", argv[i]) == 0){
-      (*alpha) = atof(argv[++i]);
+      (*alpha) = atof(argv[i+1]);
       angle_flag = 1;
       continue;
     }
     if (strcmp("-f", argv[i]) == 0){
-      strcat(fname,argv[++i]);
+      strcat(fname,argv[i+1]);
       file_flag = 1;
       continue;
     }
     if (strcmp("-o", argv[i]) == 0){
-      strcat(ofile,argv[++i]);
+      strcat(ofile,argv[i+1]);
       ofile_flag = 1;
       continue;
     }
-    if (strcmp("-P", argv[i]) == 0) {
+    if (strcmp("-p", argv[i]) == 0) {
+      (*ProblemType) = atoi(argv[i+1]);
       print = 1; // Print T to filename
       continue;
     }
@@ -285,7 +287,6 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask,
     scanf("%lf %lf", nx, ny);
   }
 #endif
-  //if (1 )
   if (help_flag || argc < 2)
   {
     printf("Quasi-1D Euler solver\n");
@@ -302,6 +303,18 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask,
   {
     printf("Enter 2D grid input filename\n");
     scanf("%s", fname);
+  }
+
+  if (print < 1)
+  {
+    while(*ProblemType > 2 || *ProblemType < 1)
+    {
+      printf("Enter problem type\n");
+      printf("1: subsonic-supersonic\n");
+      printf("2: subsonic\n");
+      //printf("3: shock\n");
+      scanf("%d", ProblemType);
+    }
   }
 
   if (ofile_flag < 1)
@@ -368,4 +381,43 @@ int print_fluxes(double fp1, double fp2, double fp3, double fp4,
   return 0;
 }
 
+int  printSoln(const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M)
+{
+  int i;
+  printf("Solution:\n");
+  printf("%5s, %6s, %7s, %7s, %7s, %7s, %7s, %7s\n",
+      "#node","    x","    A","    rho","      V","      T","      P","      M");
+
+  for (i=0; i < nn; i++)
+  {
+    printf("%5d, %6.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
+                  i+1, x[i], A[i],rho[i],  V[i],  T[i],  P[i],  M[i]);
+  }
+
+  return 0;
+}
+
+int  writeSoln(FILE *fp,const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M)
+{
+  int i;
+  fprintf(fp,"%5s, %6s, %7s, %7s, %7s, %7s, %7s, %7s\n",
+        "#node","    x","    A","    rho","      V","      T","      P","      M");
+
+  for (i=0; i <= nn-1; i++)
+  {
+    fprintf(fp,"%5d, %6.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f, %7.3f\n",
+                  i+1, x[i], A[i],rho[i],  V[i],  T[i],  P[i],  M[i]);
+  }
+
+  return 0;
+}
+
+int  write1var(FILE *fp,const int nn, double * x, double * y)
+{
+  int i;
+  for (i=0; i <= nn-1; i++)
+    fprintf(fp,"%10.6f %10.6f\n", x[i], y[i]);
+
+  return 0;
+}
 
