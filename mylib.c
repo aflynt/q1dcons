@@ -215,7 +215,7 @@ int write_gnuplot(char buff[],char filename[],FILE *fp,int **tri_conn,int nt,dou
 
 // ################# Begin Function ###########################
 // ################# Begin Function ###########################
-int parse_args(char argc, char * argv[],int * maxiter, int * ask,
+int parse_args(char argc, char * argv[],int * maxiter, int * ask, int * ProblemType,
                double * M, double * alpha, char fname[], char ofile[])
 {
   int i;
@@ -266,7 +266,8 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask,
       ofile_flag = 1;
       continue;
     }
-    if (strcmp("-P", argv[i]) == 0) {
+    if (strcmp("-p", argv[i]) == 0) {
+      (*ProblemType) = atoi(argv[++i]);
       print = 1; // Print T to filename
       continue;
     }
@@ -285,7 +286,6 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask,
     scanf("%lf %lf", nx, ny);
   }
 #endif
-  //if (1 )
   if (help_flag || argc < 2)
   {
     printf("Quasi-1D Euler solver\n");
@@ -302,6 +302,18 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask,
   {
     printf("Enter 2D grid input filename\n");
     scanf("%s", fname);
+  }
+
+  if (print < 1)
+  {
+    while(*ProblemType > 2 || *ProblemType < 1)
+    {
+      printf("Enter problem type\n");
+      printf("1: subsonic-supersonic\n");
+      printf("2: subsonic\n");
+      //printf("3: shock\n");
+      scanf("%d", ProblemType);
+    }
   }
 
   if (ofile_flag < 1)

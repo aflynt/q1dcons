@@ -58,6 +58,7 @@ int main(int argc, char * argv[])
   int maxiter = 1400;
   int ask = 0;
   int ans = 0;
+  int ProblemType = 0;
 
   // Flow field variables
 #if 0
@@ -81,7 +82,10 @@ int main(int argc, char * argv[])
 
 
   // get Command line args
-  parse_args(argc,argv,&maxiter,&ask,&M,&alpha,filename,outfile);
+  parse_args(argc,argv,&maxiter,&ask,&ProblemType,&M,&alpha,filename,outfile);
+
+  //printf("problem type = %d\n", ProblemType);
+  //exit(0);
 
 
   // Open 2D grid file for reading
@@ -168,7 +172,6 @@ int main(int argc, char * argv[])
     //printf("%.15f %.15f\n", x[n], A[n]);
   }
 #endif
- // exit(0);
 
 
   // Set IC

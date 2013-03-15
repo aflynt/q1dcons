@@ -61,7 +61,7 @@ int prn_jac(double ** DFP, double ** DFM);
 
 int prn_tri(int **tri_conn, int nt);
 
-int parse_args(char argc, char * argv[],int * maxiter, int * ask,
+int parse_args(char argc, char * argv[],int * maxiter, int * ask, int * ProblemType,
                double * M, double * alpha, char fname[], char ofile[]);
 
 
