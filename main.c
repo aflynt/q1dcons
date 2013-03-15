@@ -419,7 +419,7 @@ int setICsubsonic(int  nn,
     {
       rho[n] = 1.0 - 0.023*x[n];
       T[n]   = 1.0 - 0.009333*x[n];
-      V[n]   = 1.0 + 0.11*x[n];
+      V[n]   = 0.04 + 0.11*x[n];
       P[n]   = rho[n]*T[n];
       printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n]);
     }
