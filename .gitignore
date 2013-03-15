@@ -166,3 +166,4 @@ soln.txt
 *.o
 flux
 *.~
+csvsoln.csv
