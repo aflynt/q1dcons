@@ -152,18 +152,23 @@ int main(int argc, char * argv[])
   for (n=0; n < nn; n++)
   {
     fgets(buff,bdim,fp);
+    sscanf(buff,"%lg %lg",&x[n],&A[n]);
     sscanf(buff,"%lg",&x[n]);
+    printf("just got x, Area = %f, %f\n", x[n], A[n]);
   }
   fclose(fp); fp = NULL;
 
-
-  // Compute area
+#if 1
+  // Compute Log area
   for (n=0; n < nn; n++)
   {
-    A[n] = 1.0 + 2.2*(x[n] - 1.5)*(x[n] - 1.5);
+    //A[n] = 1.0 + 2.2*(x[n] - 1.5)*(x[n] - 1.5);
     lnA[n] = log(A[n]);
     //printf("pt %2d, ln(A) = %f\n", n, lnA[n]);
+    //printf("%.15f %.15f\n", x[n], A[n]);
   }
+#endif
+ // exit(0);
 
 
   // Set IC
