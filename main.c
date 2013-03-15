@@ -54,6 +54,7 @@ int main(int argc, char * argv[])
   double gma = 1.4;
   double alpha = 0.0;
   double mindt = 100.0;
+  double Pe = 0.99;
 
   int maxiter = 1400;
   int ask = 0;
@@ -158,7 +159,7 @@ int main(int argc, char * argv[])
     fgets(buff,bdim,fp);
     sscanf(buff,"%lg %lg",&x[n],&A[n]);
     sscanf(buff,"%lg",&x[n]);
-    printf("just got x, Area = %f, %f\n", x[n], A[n]);
+    //printf("just got x, Area = %f, %f\n", x[n], A[n]);
   }
   fclose(fp); fp = NULL;
 
@@ -175,16 +176,12 @@ int main(int argc, char * argv[])
 
 
   // Set IC
-  //printf("Initial Conditions\n");
-  //printf("           x/L   A/A*   rho/rho*   V/a0   T/T0\n");
-  for (n=0; n < nn; n++)
-  {
-    rho[n] = 1.0 - 0.3146*x[n];
-    T[n]   = 1.0 - 0.2314*x[n];
-    V[n]   = (0.1 + 1.09*x[n])*sqrt(T[n]);
-    P[n]   = rho[n]*T[n];
-   // printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n]);
-  }
+  printf("Setting Initial Conditions for Problem Type: ");
+  if(ProblemType == 1)
+    setICsubsup(nn,x,A,rho,V,T,P);
+  else
+    setICsubsonic(nn,x,A,rho,V,T,P);
+  //exit(0);
 
 
 
@@ -279,9 +276,19 @@ int main(int argc, char * argv[])
     //printf("pt %3d: %7.5f, %7.5f, %7.5f, %7.5f\n",0,rho[0],V[0],T[0],P[0]);
 
     // Outflow
+    if(ProblemType == 1) // subsonic - supersonic
+    {
     rho[nn-1] = 2.0 * rho[nn-2] - rho[nn-3];
       V[nn-1] = 2.0 *   V[nn-2] -   V[nn-3];
       T[nn-1] = 2.0 *   T[nn-2] -   T[nn-3];
+    }
+    else // subsonic
+    {
+      P[nn-1] = Pe;
+      T[nn-1] = 2.0 *   T[nn-2] -   T[nn-3];
+    rho[nn-1] = P[nn-1] / T[nn-1];
+      V[nn-1] = 2.0 *   V[nn-2] -   V[nn-3];
+    }
     //printf("pt %3d: %7.5f, %7.5f, %7.5f, %7.5f\n",i,rho[nn-1],V[nn-1],T[nn-1],P[nn-1]);
 
 
@@ -289,7 +296,15 @@ int main(int argc, char * argv[])
     //printf("pt %3s: %7s, %7s, %7s, %7s, %7s\n","  i","    rho","      V","      T","     P","     M");
 
     //Update P,M
+    if(ProblemType == 1) // subsonic - supersonic
     for (i=0; i <= nn-1; i++)
+    {
+      P[i]   = rho[i]*T[i];
+      Mv[i]  = V[i] / sqrt(T[i]);
+    }
+
+    else // subsonic
+    for (i=0; i < nn-1; i++)
     {
       P[i]   = rho[i]*T[i];
       Mv[i]  = V[i] / sqrt(T[i]);
@@ -368,3 +383,45 @@ int  writeSoln(FILE *fp,const int nn, double * x, double * A,double * rho, doubl
 
 
 
+int setICsubsup(int  nn,
+                double * x,
+                double * A,
+                double * rho,
+                double * V,
+                double * T,
+                double * P)
+{
+    printf("\nSubsonic-supersonic\n");
+    int n;
+    printf("           x/L   A/A*   rho/rho*   V/a0   T/T0\n");
+    for (n=0; n < nn; n++)
+    {
+      rho[n] = 1.0 - 0.3146*x[n];
+      T[n]   = 1.0 - 0.2314*x[n];
+      V[n]   = (0.1 + 1.09*x[n])*sqrt(T[n]);
+      P[n]   = rho[n]*T[n];
+      printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n]);
+    }
+    return n;
+}
+int setICsubsonic(int  nn,
+                  double * x,
+                  double * A,
+                  double * rho,
+                  double * V,
+                  double * T,
+                  double * P)
+{
+    printf("\nSubsonic\n");
+    int n;
+    printf("           x/L   A/A*   rho/rho*   V/a0   T/T0\n");
+    for (n=0; n < nn; n++)
+    {
+      rho[n] = 1.0 - 0.023*x[n];
+      T[n]   = 1.0 - 0.009333*x[n];
+      V[n]   = 1.0 + 0.11*x[n];
+      P[n]   = rho[n]*T[n];
+      printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n]);
+    }
+    return n;
+}

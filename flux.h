@@ -78,3 +78,5 @@ int prn_results( int NI, int NJ, double omega, double dt_max, int k_final, doubl
 int prn_results2file( FILE ** fp, char filename[], int NI, int NJ,
            double dx, double dy, double omega, double dt_max, int k_final, double delta_time);
 int write_gnuplot(char buff[],char filename[],FILE *fp,int **tri_conn,int nt,double *x,double *y);
+int setICsubsup(  int nn,double * x,double * A,double * rho,double * V,double * T,double * P);
+int setICsubsonic(int nn,double * x,double * A,double * rho,double * V,double * T,double * P);
