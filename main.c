@@ -6,6 +6,7 @@
  *  MacCormack 1D Euler Subsonic-Supersonic Nozzle
  *  Sat Mar 16 21:29:28 EDT 2013
  */
+int safeAllocDouble(const int nn, double ** V, char * name);
 
 int main(int argc, char * argv[])
 {
@@ -102,41 +103,24 @@ int main(int argc, char * argv[])
 // Allocate memory
 // ######################### Section Break ###########################
 
-  if ((rho   = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for rho");exit(0);}
-  if ((V     = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for V");exit(0);}
-  if ((Mv    = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for Mv");exit(0);}
-  if ((T     = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for T");exit(0);}
-  if ((P     = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for P");exit(0);}
-  if ((rhob  = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for rhob");exit(0);}
-  if ((Tb    = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for Tb");exit(0);}
-  if ((Vb    = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for Vb");exit(0);}
-  if ((drdt  = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for drdt");exit(0);}
-  if ((dVdt  = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for dVdt");exit(0);}
-  if ((dTdt  = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for dTdt");exit(0);}
-  if ((drdtb = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for drdtb");exit(0);}
-  if ((dVdtb = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for dVdtb");exit(0);}
-  if ((dTdtb = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for dTdtb");exit(0);}
-  if ((x     = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for X");exit(0);}
-  if ((A     = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for A");exit(0);}
-  if ((lnA   = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for lnA");exit(0);}
-
+  safeAllocDouble(nn, &x     ,"x"    );
+  safeAllocDouble(nn, &A     ,"A"    );
+  safeAllocDouble(nn, &lnA   ,"lnA"  );
+  safeAllocDouble(nn, &rho   ,"rho"  );
+  safeAllocDouble(nn, &V     ,"V"    );
+  safeAllocDouble(nn, &Mv    ,"Mv"   );
+  safeAllocDouble(nn, &Mv    ,"Mv"   );
+  safeAllocDouble(nn, &T     ,"T"    );
+  safeAllocDouble(nn, &P     ,"P"    );
+  safeAllocDouble(nn, &rhob  ,"rhob" );
+  safeAllocDouble(nn, &Tb    ,"Tb"   );
+  safeAllocDouble(nn, &Vb    ,"Vb"   );
+  safeAllocDouble(nn, &drdt  ,"drdt" );
+  safeAllocDouble(nn, &dVdt  ,"dVdt" );
+  safeAllocDouble(nn, &dTdt  ,"dTdt" );
+  safeAllocDouble(nn, &drdtb ,"drdtb");
+  safeAllocDouble(nn, &dVdtb ,"dVdtb");
+  safeAllocDouble(nn, &dTdtb ,"dTdtb");
 
 
   // Read grid nodes x-locations and Area
@@ -148,6 +132,7 @@ int main(int argc, char * argv[])
     //printf("From file: x = %f Area = %f\n", x[n], A[n]);
   }
   fclose(fp); fp = NULL;
+
 
   // Compute Log area
   for (n=0; n < nn; n++)
@@ -412,4 +397,13 @@ int setICsubsonic(int  nn,double * x,double * A,double * rho,double * V,double *
       //printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n], P[n]);
     }
     return n;
+}
+
+int safeAllocDouble(const int nn, double ** V, char * name)
+{
+  if (((*V)   = (double*)malloc(nn*sizeof(double))) == NULL){
+    //printf("\nCould not allocate memory for %s", varname);
+    printf("\nCould not allocate memory for %s", name);
+    exit(0);
+  }
 }
