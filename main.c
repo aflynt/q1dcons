@@ -206,7 +206,7 @@ int main(int argc, char * argv[])
   else if (ProblemType == 2)
     setICsubsonic(nn,x,A,rho,V,T,P);
   else
-    setICcons(nn,x,A,rho,V,T,P);
+    setICcons(nn,x,A,rho,V,T,P,U1,U2,U3);
 
   exit(0);
 

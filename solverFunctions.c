@@ -35,14 +35,15 @@ int setICsubsonic(int  nn,double * x,double * A,double * rho,double * V,double *
 }
 
 // Set Conservative IC
-int setICcons(int  nn,double * x,double * A,double * rho,double * V,double * T,double * P)
+int setICcons(int  nn,double * x,double * A,double * rho,double * V,double * T,double * P,
+              double * U1, double * U2, double * U3)
 {
     int n;
     double mdot = 0.59;
 
     printf(" In CONS IC\n");
     printf("Setting Initial Conditions for Problem Type: Conservative sub-super\n");
-    printf("           x/L   A/A*   rho/rho*   V/a0   T/T0   p/p0\n");
+    printf("           x/L   A/A*   rho/rho*   V/a0   T/T0    U1      U2     U3\n");
 
     // Loop over nodes
     for (n=0; n < nn; n++)
@@ -67,7 +68,15 @@ int setICcons(int  nn,double * x,double * A,double * rho,double * V,double * T,d
 
       V[n]   = mdot/(rho[n]*A[n]);
       P[n]   = rho[n]*T[n];
-      printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n], P[n]);
+
+      // U vars
+      U1[n] = rho[n]*A[n];
+      U2[n] = rho[n]*A[n]*V[n];
+      U3[n] = rho[n]* (T[n]/gm1 + g/2.0*V[n]*V[n])*A[n];
+
+
+      printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f %7.3f\n",
+                n,x[n],A[n],rho[n],V[n],T[n], U1[n], U2[n], U3[n]);
     }
     return n;
 }

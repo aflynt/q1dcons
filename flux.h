@@ -81,7 +81,8 @@ int write_gnuplot(char buff[],char filename[],FILE *fp,int **tri_conn,int nt,dou
 
 int setICsubsup(  int nn,double * x,double * A,double * rho,double * V,double * T,double * P);
 int setICsubsonic(int nn,double * x,double * A,double * rho,double * V,double * T,double * P);
-int setICcons(   int  nn,double * x,double * A,double * rho,double * V,double * T,double * P);
+int setICcons(int  nn,double * x,double * A,double * rho,double * V,double * T,double * P,
+              double * U1, double * U2, double * U3);
 
 int  writeSoln(FILE *fp,const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M);
 int  printSoln(const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M);
