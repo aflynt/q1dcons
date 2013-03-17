@@ -85,3 +85,10 @@ int  printSoln(const int nn, double * x, double * A,double * rho, double * V, do
 int  write1var(FILE *fp,const int nn, double * x, double * y);
 int stressTest(const int nn, double *J2);
 int safeAllocDouble(const int nn, double ** V);
+
+int  q1dSolve(int maxiter,const int nn, double * x, double * lnA,
+            double * rho,   double * V ,    double * T ,
+            double * rhob,  double * Vb,    double * Tb,
+            double * drdt , double * dVdt , double * dTdt,
+            double * drdtb, double * dVdtb, double * dTdtb,
+            double * P,     double * Mv, const int ProblemType, int ask);
