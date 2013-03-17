@@ -307,12 +307,12 @@ int parse_args(char argc, char * argv[],int * maxiter, int * ask, int * ProblemT
 
   if (print < 1)
   {
-    while(*ProblemType > 2 || *ProblemType < 1)
+    while(*ProblemType > 3 || *ProblemType < 1)
     {
       printf("Enter problem type\n");
       printf("1: subsonic-supersonic\n");
       printf("2: subsonic\n");
-      //printf("3: shock\n");
+      printf("3: conservative subsonic-supersonic\n");
       scanf("%d", ProblemType);
     }
   }

@@ -203,8 +203,12 @@ int main(int argc, char * argv[])
   // Set IC
   if(ProblemType == 1)
     setICsubsup(nn,x,A,rho,V,T,P);
-  else
+  else if (ProblemType == 2)
     setICsubsonic(nn,x,A,rho,V,T,P);
+  else
+    setICcons(nn,x,A,rho,V,T,P);
+
+  exit(0);
 
 
 

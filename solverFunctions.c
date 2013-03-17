@@ -34,6 +34,44 @@ int setICsubsonic(int  nn,double * x,double * A,double * rho,double * V,double *
     return n;
 }
 
+// Set Conservative IC
+int setICcons(int  nn,double * x,double * A,double * rho,double * V,double * T,double * P)
+{
+    int n;
+    double mdot = 0.59;
+
+    printf(" In CONS IC\n");
+    printf("Setting Initial Conditions for Problem Type: Conservative sub-super\n");
+    printf("           x/L   A/A*   rho/rho*   V/a0   T/T0   p/p0\n");
+
+    // Loop over nodes
+    for (n=0; n < nn; n++)
+    {
+      if((x[n] -0.5) < 1.e-10) // x less than 0.5
+      {
+        rho[n] = 1.0;
+          T[n] = 1.0;
+      }
+
+      else if((x[n] - 1.5) < 1.e-10) // x less than 1.5
+      {
+        rho[n] = 1.0 - 0.366*(x[n] - 0.5);
+        T[n]   = 1.0 - 0.167*(x[n] - 0.5);
+      }
+
+      else // x greater than 1.5
+      {
+        rho[n] = 0.634 - 0.3879*(x[n] - 1.5);
+        T[n]   = 0.833 - 0.3507*(x[n] - 1.5);
+      }
+
+      V[n]   = mdot/(rho[n]*A[n]);
+      P[n]   = rho[n]*T[n];
+      printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n], P[n]);
+    }
+    return n;
+}
+
 // QQ
 int  q1dSolve(int maxiter,const int nn, double * x, double * lnA,
             double * rho,   double * V ,    double * T ,
