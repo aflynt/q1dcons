@@ -5,9 +5,9 @@ Quasi-1D solver
 make
 
 # execute with command
-./flux [-f gridfile] [-o outfile] [-n ts]
+./flux [-f grid-file] [-p problem-num] [-o outfile] [-n ts]
 
-# input grid file with spec
+# input grid-file with format
 # header
 N
 x1 Area1
