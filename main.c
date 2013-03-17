@@ -44,6 +44,32 @@ int main(int argc, char * argv[])
   double *dVdtb = NULL;
   double *dTdtb = NULL;
 
+  // Conservative Variables
+  double *U1    = NULL;
+  double *U2    = NULL;
+  double *U3    = NULL;
+
+  double *Ub1   = NULL;
+  double *Ub2   = NULL;
+  double *Ub3   = NULL;
+
+  double *dU1   = NULL;
+  double *dU2   = NULL;
+  double *dU3   = NULL;
+
+  double *dUb1  = NULL;
+  double *dUb2  = NULL;
+  double *dUb3  = NULL;
+
+  double *F1    = NULL;
+  double *F2    = NULL;
+  double *F3    = NULL;
+
+  double *Fb1   = NULL;
+  double *Fb2   = NULL;
+  double *Fb3   = NULL;
+  double *J2    = NULL;
+
 
   double nx,ny;
   double M  = 0.0;
@@ -103,24 +129,62 @@ int main(int argc, char * argv[])
 // Allocate memory
 // ######################### Section Break ###########################
 
+  // x and area
   safeAllocDouble(nn, &x     ,"x"    );
   safeAllocDouble(nn, &A     ,"A"    );
   safeAllocDouble(nn, &lnA   ,"lnA"  );
+
+  // Primitives
   safeAllocDouble(nn, &rho   ,"rho"  );
   safeAllocDouble(nn, &V     ,"V"    );
-  safeAllocDouble(nn, &Mv    ,"Mv"   );
-  safeAllocDouble(nn, &Mv    ,"Mv"   );
   safeAllocDouble(nn, &T     ,"T"    );
+
+  // Dependent Primitives
   safeAllocDouble(nn, &P     ,"P"    );
+  safeAllocDouble(nn, &Mv    ,"Mv"   );
+  safeAllocDouble(nn, &Mv    ,"Mv"   );
+
+  // predictor vars
   safeAllocDouble(nn, &rhob  ,"rhob" );
   safeAllocDouble(nn, &Tb    ,"Tb"   );
   safeAllocDouble(nn, &Vb    ,"Vb"   );
+
+  // partials
   safeAllocDouble(nn, &drdt  ,"drdt" );
   safeAllocDouble(nn, &dVdt  ,"dVdt" );
   safeAllocDouble(nn, &dTdt  ,"dTdt" );
+
+  // predictor partials
   safeAllocDouble(nn, &drdtb ,"drdtb");
   safeAllocDouble(nn, &dVdtb ,"dVdtb");
   safeAllocDouble(nn, &dTdtb ,"dTdtb");
+
+  // Allocate Conservative Vectors
+  safeAllocDouble(nn, &U1    ,"U1"   );
+  safeAllocDouble(nn, &U2    ,"U2"   );
+  safeAllocDouble(nn, &U3    ,"U3"   );
+
+  safeAllocDouble(nn, &Ub1   ,"Ub1"  );
+  safeAllocDouble(nn, &Ub2   ,"Ub2"  );
+  safeAllocDouble(nn, &Ub3   ,"Ub3"  );
+
+  safeAllocDouble(nn, &dU1   ,"dU1"  );
+  safeAllocDouble(nn, &dU2   ,"dU2"  );
+  safeAllocDouble(nn, &dU3   ,"dU3"  );
+
+  safeAllocDouble(nn, &dUb1  ,"dUb1" );
+  safeAllocDouble(nn, &dUb2  ,"dUb2" );
+  safeAllocDouble(nn, &dUb3  ,"dUb3" );
+
+  safeAllocDouble(nn, &F1    ,"F1"   );
+  safeAllocDouble(nn, &F2    ,"F2"   );
+  safeAllocDouble(nn, &F3    ,"F3"   );
+
+  safeAllocDouble(nn, &Fb1   ,"Fb1"  );
+  safeAllocDouble(nn, &Fb2   ,"Fb2"  );
+  safeAllocDouble(nn, &Fb3   ,"Fb3"  );
+
+  safeAllocDouble(nn, &J2    ,"J2"   );
 
 
   // Read grid nodes x-locations and Area
@@ -358,6 +422,33 @@ int main(int argc, char * argv[])
   free(drdtb); drdtb = NULL;
   free(dVdtb); dVdtb = NULL;
   free(dTdtb); dTdtb = NULL;
+
+  free(U1  );    U1  = NULL;
+  free(U2  );    U2  = NULL;
+  free(U3  );    U3  = NULL;
+
+  free(Ub1 );    Ub1 = NULL;
+  free(Ub2 );    Ub2 = NULL;
+  free(Ub3 );    Ub3 = NULL;
+
+  free(dU1 );    dU1 = NULL;
+  free(dU2 );    dU2 = NULL;
+  free(dU3 );    dU3 = NULL;
+
+  free(dUb1);    dUb1= NULL;
+  free(dUb2);    dUb2= NULL;
+  free(dUb3);    dUb3= NULL;
+
+  free(F1  );    F1  = NULL;
+  free(F2  );    F2  = NULL;
+  free(F3  );    F3  = NULL;
+
+  free(Fb1 );    Fb1 = NULL;
+  free(Fb2 );    Fb2 = NULL;
+  free(Fb3 );    Fb3 = NULL;
+
+  free(J2  );    J2  = NULL;
+
 
   return 0;
 
