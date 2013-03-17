@@ -4,7 +4,7 @@
 /*
  *  Austin Flynt
  *  MacCormack 1D Euler Subsonic-Supersonic Nozzle
- *  Tue Mar  5 19:07:54 EST 2013
+ *  Sat Mar 16 21:29:28 EDT 2013
  */
 
 int main(int argc, char * argv[])
@@ -30,15 +30,15 @@ int main(int argc, char * argv[])
   double *V     = NULL;
   double *P     = NULL;
   double *Mv    = NULL;
+
   double *rhob  = NULL;
   double *Tb    = NULL;
   double *Vb    = NULL;
-  double *rhon  = NULL;
-  double *Tn    = NULL;
-  double *Vn    = NULL;
+
   double *drdt  = NULL;
   double *dVdt  = NULL;
   double *dTdt  = NULL;
+
   double *drdtb = NULL;
   double *dVdtb = NULL;
   double *dTdtb = NULL;
@@ -118,12 +118,6 @@ int main(int argc, char * argv[])
     printf("\nCould not allocate memory for Tb");exit(0);}
   if ((Vb    = (double*)malloc(nn*sizeof(double))) == NULL){
     printf("\nCould not allocate memory for Vb");exit(0);}
-  if ((rhon  = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for rhon");exit(0);}
-  if ((Tn    = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for Tn");exit(0);}
-  if ((Vn    = (double*)malloc(nn*sizeof(double))) == NULL){
-    printf("\nCould not allocate memory for Vn");exit(0);}
   if ((drdt  = (double*)malloc(nn*sizeof(double))) == NULL){
     printf("\nCould not allocate memory for drdt");exit(0);}
   if ((dVdt  = (double*)malloc(nn*sizeof(double))) == NULL){
@@ -373,9 +367,6 @@ int main(int argc, char * argv[])
   free(rhob);   rhob = NULL;
   free(Tb);       Tb = NULL;
   free(Vb   ); Vb    = NULL;
-  free(rhon ); rhon  = NULL;
-  free(Tn   ); Tn    = NULL;
-  free(Vn   ); Vn    = NULL;
   free(drdt ); drdt  = NULL;
   free(dVdt ); dVdt  = NULL;
   free(dTdt ); dTdt  = NULL;
