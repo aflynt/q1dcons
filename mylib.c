@@ -384,7 +384,7 @@ int print_fluxes(double fp1, double fp2, double fp3, double fp4,
 int  printSoln(const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M)
 {
   int i;
-  printf("Solution:\n");
+  printf("\nSolution:\n");
   printf("%5s, %6s, %7s, %7s, %7s, %7s, %7s, %7s\n",
       "#node","    x","    A","    rho","      V","      T","      P","      M");
 
@@ -421,3 +421,22 @@ int  write1var(FILE *fp,const int nn, double * x, double * y)
   return 0;
 }
 
+int safeAllocDouble(const int nn, double ** V)
+{
+  if (((*V)   = (double*)malloc(nn*sizeof(double))) == NULL){
+    //printf("\nCould not allocate memory for %s", varname);
+    printf("\nCould not allocate memory");
+    exit(0);
+  }
+}
+
+int stressTest(const int nn, double *J2)
+{
+  int i;
+  //for (i = 0; i < 100*nn ; i++)
+  for (i = 0; i < nn ; i++)
+  {
+    J2[i]= i;
+    ddprint(J2[i]);
+  }
+}

@@ -6,7 +6,6 @@
  *  MacCormack 1D Euler Subsonic-Supersonic Nozzle
  *  Sat Mar 16 21:29:28 EDT 2013
  */
-int safeAllocDouble(const int nn, double ** V, char * name);
 
 int main(int argc, char * argv[])
 {
@@ -130,61 +129,61 @@ int main(int argc, char * argv[])
 // ######################### Section Break ###########################
 
   // x and area
-  safeAllocDouble(nn, &x     ,"x"    );
-  safeAllocDouble(nn, &A     ,"A"    );
-  safeAllocDouble(nn, &lnA   ,"lnA"  );
+  safeAllocDouble(nn, &x     );
+  safeAllocDouble(nn, &A     );
+  safeAllocDouble(nn, &lnA   );
 
   // Primitives
-  safeAllocDouble(nn, &rho   ,"rho"  );
-  safeAllocDouble(nn, &V     ,"V"    );
-  safeAllocDouble(nn, &T     ,"T"    );
+  safeAllocDouble(nn, &rho   );
+  safeAllocDouble(nn, &V     );
+  safeAllocDouble(nn, &T     );
 
   // Dependent Primitives
-  safeAllocDouble(nn, &P     ,"P"    );
-  safeAllocDouble(nn, &Mv    ,"Mv"   );
-  safeAllocDouble(nn, &Mv    ,"Mv"   );
+  safeAllocDouble(nn, &P     );
+  safeAllocDouble(nn, &Mv    );
+  safeAllocDouble(nn, &Mv    );
 
   // predictor vars
-  safeAllocDouble(nn, &rhob  ,"rhob" );
-  safeAllocDouble(nn, &Tb    ,"Tb"   );
-  safeAllocDouble(nn, &Vb    ,"Vb"   );
+  safeAllocDouble(nn, &rhob  );
+  safeAllocDouble(nn, &Tb    );
+  safeAllocDouble(nn, &Vb    );
 
   // partials
-  safeAllocDouble(nn, &drdt  ,"drdt" );
-  safeAllocDouble(nn, &dVdt  ,"dVdt" );
-  safeAllocDouble(nn, &dTdt  ,"dTdt" );
+  safeAllocDouble(nn, &drdt  );
+  safeAllocDouble(nn, &dVdt  );
+  safeAllocDouble(nn, &dTdt  );
 
   // predictor partials
-  safeAllocDouble(nn, &drdtb ,"drdtb");
-  safeAllocDouble(nn, &dVdtb ,"dVdtb");
-  safeAllocDouble(nn, &dTdtb ,"dTdtb");
+  safeAllocDouble(nn, &drdtb );
+  safeAllocDouble(nn, &dVdtb );
+  safeAllocDouble(nn, &dTdtb );
 
   // Allocate Conservative Vectors
-  safeAllocDouble(nn, &U1    ,"U1"   );
-  safeAllocDouble(nn, &U2    ,"U2"   );
-  safeAllocDouble(nn, &U3    ,"U3"   );
+  safeAllocDouble(nn, &U1    );
+  safeAllocDouble(nn, &U2    );
+  safeAllocDouble(nn, &U3    );
 
-  safeAllocDouble(nn, &Ub1   ,"Ub1"  );
-  safeAllocDouble(nn, &Ub2   ,"Ub2"  );
-  safeAllocDouble(nn, &Ub3   ,"Ub3"  );
+  safeAllocDouble(nn, &Ub1   );
+  safeAllocDouble(nn, &Ub2   );
+  safeAllocDouble(nn, &Ub3   );
 
-  safeAllocDouble(nn, &dU1   ,"dU1"  );
-  safeAllocDouble(nn, &dU2   ,"dU2"  );
-  safeAllocDouble(nn, &dU3   ,"dU3"  );
+  safeAllocDouble(nn, &dU1   );
+  safeAllocDouble(nn, &dU2   );
+  safeAllocDouble(nn, &dU3   );
 
-  safeAllocDouble(nn, &dUb1  ,"dUb1" );
-  safeAllocDouble(nn, &dUb2  ,"dUb2" );
-  safeAllocDouble(nn, &dUb3  ,"dUb3" );
+  safeAllocDouble(nn, &dUb1  );
+  safeAllocDouble(nn, &dUb2  );
+  safeAllocDouble(nn, &dUb3  );
 
-  safeAllocDouble(nn, &F1    ,"F1"   );
-  safeAllocDouble(nn, &F2    ,"F2"   );
-  safeAllocDouble(nn, &F3    ,"F3"   );
+  safeAllocDouble(nn, &F1    );
+  safeAllocDouble(nn, &F2    );
+  safeAllocDouble(nn, &F3    );
 
-  safeAllocDouble(nn, &Fb1   ,"Fb1"  );
-  safeAllocDouble(nn, &Fb2   ,"Fb2"  );
-  safeAllocDouble(nn, &Fb3   ,"Fb3"  );
+  safeAllocDouble(nn, &Fb1   );
+  safeAllocDouble(nn, &Fb2   );
+  safeAllocDouble(nn, &Fb3   );
 
-  safeAllocDouble(nn, &J2    ,"J2"   );
+  safeAllocDouble(nn, &J2    );
 
 
   // Read grid nodes x-locations and Area
@@ -456,45 +455,3 @@ int main(int argc, char * argv[])
 
 
 
-int setICsubsup(int  nn,double * x,double * A,double * rho,double * V,double * T,double * P)
-{
-    int n;
-    printf("Setting Initial Conditions for Problem Type: Subsonic-supersonic\n");
-    //printf("           x/L   A/A*   rho/rho*   V/a0   T/T0   p/p0\n");
-
-    for (n=0; n < nn; n++)
-    {
-      rho[n] = 1.0 - 0.3146*x[n];
-      T[n]   = 1.0 - 0.2314*x[n];
-      V[n]   = (0.1 + 1.09*x[n])*sqrt(T[n]);
-      P[n]   = rho[n]*T[n];
-      //printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n], P[n]);
-    }
-    return n;
-}
-
-int setICsubsonic(int  nn,double * x,double * A,double * rho,double * V,double * T,double * P)
-{
-    int n;
-    printf("Setting Initial Conditions for Problem Type: Subsonic\n");
-    //printf("           x/L   A/A*   rho/rho*   V/a0   T/T0   p/p0\n");
-
-    for (n=0; n < nn; n++)
-    {
-      rho[n] = 1.0 - 0.023*x[n];
-      T[n]   = 1.0 - 0.009333*x[n];
-      V[n]   = 0.05 + 0.11*x[n];
-      P[n]   = rho[n]*T[n];
-      //printf("pt %3d: %7.2f %7.3f %7.3f %7.3f %7.3f %7.3f\n",n,x[n],A[n],rho[n],V[n],T[n], P[n]);
-    }
-    return n;
-}
-
-int safeAllocDouble(const int nn, double ** V, char * name)
-{
-  if (((*V)   = (double*)malloc(nn*sizeof(double))) == NULL){
-    //printf("\nCould not allocate memory for %s", varname);
-    printf("\nCould not allocate memory for %s", name);
-    exit(0);
-  }
-}

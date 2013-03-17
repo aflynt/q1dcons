@@ -26,7 +26,7 @@ ifeq ($(COMPILER),gnusim)
 endif
 
 HEADERS = flux.h List.h
-SRCS = main.c flux.c mylib.c resid.c deltat.c List.C n2n.C
+SRCS = main.c flux.c mylib.c resid.c deltat.c List.C n2n.C solverFunctions.c
 OBJECTS = $(SRCS:.C=.o)
 DISTFILES = $(SRCS) $(HEADERS) Makefile
 

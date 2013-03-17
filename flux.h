@@ -83,3 +83,5 @@ int setICsubsonic(int nn,double * x,double * A,double * rho,double * V,double * 
 int  writeSoln(FILE *fp,const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M);
 int  printSoln(const int nn, double * x, double * A,double * rho, double * V, double *T, double *P,double * M);
 int  write1var(FILE *fp,const int nn, double * x, double * y);
+int stressTest(const int nn, double *J2);
+int safeAllocDouble(const int nn, double ** V);

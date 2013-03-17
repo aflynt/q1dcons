@@ -1,1 +1,1 @@
-./flux -f subarea.dat -p 2 -n 5000
+./flux -f subarea.txt -p 2 -n 5000
