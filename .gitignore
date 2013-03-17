@@ -166,3 +166,9 @@ soln.txt
 *.o
 flux
 *.~
+T.dat
+p.dat
+v.dat
+V.dat
+csvsoln.csv
+
