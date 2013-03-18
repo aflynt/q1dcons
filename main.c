@@ -199,38 +199,54 @@ int main(int argc, char * argv[])
     //printf("%.15f %.15f\n", x[n], A[n]);
   }
 
-
   // Set IC
   if(ProblemType == 1)
     setICsubsup(nn,x,A,rho,V,T,P);
   else if (ProblemType == 2)
     setICsubsonic(nn,x,A,rho,V,T,P);
-  else
+  else if (ProblemType == 3)
     setICcons(nn,x,A,rho,V,T,P,U1,U2,U3);
+  else
+  {
+    printf("\nError: Unknown Problem Type: %d\n",ProblemType);
+    exit(0);
+  }
 
-  exit(0);
 
 
 
-  // ==========================================
   // Solver Loop
   // ==========================================
-  q1dSolve(maxiter,nn,x,lnA,
+  if(ProblemType == 1 || ProblemType == 2)
+    q1dSolve(maxiter,nn,x,lnA,
            rho, V ,T ,
            rhob,Vb,Tb,
            drdt ,dVdt ,dTdt,
            drdtb,dVdtb,dTdtb,
-           P, Mv, ProblemType, ask
-           );
+           P, Mv, ProblemType, ask);
 
+  else if (ProblemType == 3)
+    q1dSolveCons(maxiter,nn, x, A, lnA,
+            rho,    V ,     T ,
+            rhob,   Vb,     Tb,
+            drdt,   dVdt,   dTdt,
+            drdtb,  dVdtb,  dTdtb,
+            U1,     U2,     U3,
+            Ub1,    Ub2,    Ub3,
+            dU1,    dU2,    dU3,
+            dUb1,   dUb2,   dUb3,
+            F1,     F2,     F3,
+            Fb1,    Fb2,    Fb3,
+            J2,     P,      Mv,
+            ProblemType,  ask);
+
+  //  end solver
   // ======================
-  //  end solver iteration
-  // ======================
+
+
 
   // Print soln to screen
   printSoln(nn,x,A,rho,V,T,P,Mv);
-
-
 
   // Open file for write
   if ((fp=fopen(outfile,"w")) == NULL){
