@@ -315,16 +315,17 @@ int  q1dSolveCons(int maxiter,const int nn, double * x, double * A, double * lnA
 
 
     // Calc Predictor values
-    printf("Calculating Predictor values\n");
+    //printf("Calculating Predictor values\n");
     for (i=0; i < nn-1; i++)
     {
-      //rhob[i] = rho[i] + drdt[i]*mindt;
-      //  Vb[i] =   V[i] + dVdt[i]*mindt;
-      //  Tb[i] =   T[i] + dTdt[i]*mindt;
-      Ub1[i] = U1[i] + dU1[i]*mindt;
-      Ub2[i] = U2[i] + dU2[i]*mindt;
-      Ub3[i] = U3[i] + dU3[i]*mindt;
-      printf("pt %3d: %7.5f %7.5f %7.5f\n",i,Ub1[i],Ub2[i],Ub3[i]);
+       Ub1[i] = U1[i] + dU1[i]*mindt;
+       Ub2[i] = U2[i] + dU2[i]*mindt;
+       Ub3[i] = U3[i] + dU3[i]*mindt;
+      rhob[i] = Ub1[i]/A[i];
+        Vb[i] = Ub2[i]/Ub1[i];
+        Tb[i] = gm1*(Ub3[i]/Ub1[i] - g/2.0*Vb[i]*Vb[i]);
+      //printf("pt %3d: %7.5f %7.5f %7.5f %7.5f %7.5f %7.5f\n",
+      //        i,Ub1[i],Ub2[i],Ub3[i],rhob[i],Vb[i],Tb[i]);
     }
     return maxiter;
 
