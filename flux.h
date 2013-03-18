@@ -115,3 +115,5 @@ int  q1dSolveCons(int maxiter,const int nn, double * x, double * A, double * lnA
             double * Fb1,   double * Fb2,   double * Fb3,
             double * J2,    double * P,     double * Mv,
             const int ProblemType, int ask);
+int getFlux(const int nn, double * U1,  double * U2,  double * U3,
+                          double * F1,  double * F2,  double * F3);

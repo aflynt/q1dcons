@@ -279,21 +279,18 @@ int  q1dSolveCons(int maxiter,const int nn, double * x, double * A, double * lnA
   {
 
     //Calc Fluxes
-    //printf("\nFluxes =\n");
-    //printf("pt %3s: %7s %7s %7s %7s\n","itr", "    F1", "    F2", "    F3", "    J2");
+    getFlux(nn,  U1, U2, U3, F1, F2, F3);
+
+    // Forward Src term
     for (i=0; i < nn-1; i++)
     {
-      F1[i] = U2[i];
-      F2[i] = U2[i]*U2[i]/U1[i] + gm1/g*(U3[i] - g/2.0*U2[i]*U2[i]/U1[i]);
-      F3[i] = g*U2[i]*U3[i]/U1[i] - g*gm1/2.0*U2[i]*U2[i]*U2[i]/(U1[i]*U1[i]);
       J2[i] = 1/g*rho[i]*T[i]*(A[i+1] - A[i])/dx;
-      //printf("pt %3d: %7.2f %7.3f %7.3f %7.3f\n",i, F1[i], F2[i], F3[i], J2[i]);
+      //printf("J2[%2d] = %f\n",i, J2[i]);
     }
 
 
-
     // Get Predictor Partials
-    printf("Predictor Partials\n");
+    //printf("Predictor Partials\n");
     for (i=0; i < nn-1; i++)
     {
       dU1[i] = - (F1[i+1] - F1[i]) / dx;
@@ -315,7 +312,7 @@ int  q1dSolveCons(int maxiter,const int nn, double * x, double * A, double * lnA
 
 
     // Calc Predictor values
-    //printf("Calculating Predictor values\n");
+   // printf("Calculating Predictor values\n");
     for (i=0; i < nn-1; i++)
     {
        Ub1[i] = U1[i] + dU1[i]*mindt;
@@ -327,27 +324,32 @@ int  q1dSolveCons(int maxiter,const int nn, double * x, double * A, double * lnA
       //printf("pt %3d: %7.5f %7.5f %7.5f %7.5f %7.5f %7.5f\n",
       //        i,Ub1[i],Ub2[i],Ub3[i],rhob[i],Vb[i],Tb[i]);
     }
-    return maxiter;
+
+    //Calc predictor Fluxes
+    getFlux(nn,  Ub1, Ub2, Ub3, Fb1, Fb2, Fb3);
+
+    // ZZZ
+    // Bkwd Src term
+    for (i=0; i < nn-1; i++)
+      J2[i] = 1/g*rhob[i]*Tb[i]*(A[i] - A[i-1])/dx;
+
 
     //CORRECTOR STEP
     //
     //
     //Calc Corrector Partials
-    //printf("Corrector Partials\n");
+    printf("Corrector Partials\n");
     //printf("pt %3s: %7s, %7s, %7s\n","  i","   drho","     dV","     dT");
     for (i=1; i < nn-1; i++)
     {
-      drdtb[i] =  -rhob[i]*(Vb[i] - Vb[i-1])/dx
-                 - rhob[i]*Vb[i]*(lnA[i]-lnA[i-1])/dx
-                 -Vb[i]*(rhob[i] - rhob[i-1])/dx;
-      dVdtb[i] = -Vb[i]*(Vb[i] - Vb[i-1])/dx
-                 -1.0/gma *
-                  ((Tb[i] - Tb[i-1])/dx  + Tb[i]/rhob[i]*(rhob[i]-rhob[i-1])/dx);
-      dTdtb[i] = -Vb[i]*(Tb[i] - Tb[i-1])/dx
-                 - (gma-1.0)*Tb[i] *
-                   ((Vb[i] - Vb[i-1])/dx + Vb[i]*(lnA[i]-lnA[i-1])/dx);
-      //printf("pt %3d: %7.5f, %7.5f, %7.5f\n",i,drdtb[i],dVdtb[i],dTdtb[i]);
+      dUb1[i] = - (Fb1[i] - Fb1[i-1]) / dx;
+      dUb2[i] = - (Fb2[i] - Fb2[i-1]) / dx + J2[i];
+      dUb3[i] = - (Fb3[i] - Fb3[i-1]) / dx;
+
+      printf("pt %3d: %7.5f %7.5f %7.5f\n",i, dUb1[i], dUb2[i], dUb3[i]);
+
     }
+    return maxiter;
 
     // Average partials
     //printf("Average Partials\n");
@@ -438,3 +440,26 @@ int  q1dSolveCons(int maxiter,const int nn, double * x, double * A, double * lnA
 
   return maxiter;
 } // end of solver
+
+
+int getFlux(const int nn, double * U1,  double * U2,  double * U3,
+                          double * F1,  double * F2,  double * F3)
+{
+  int i;
+
+   // printf("\nFluxes =\n");
+   //printf("pt %3s: %7s %7s %7s %7s\n","itr", "    F1", "    F2", "    F3", "    J2");
+    for (i=0; i < nn-1; i++)
+    {
+      F1[i] = U2[i];
+      F2[i] = U2[i]*U2[i]/U1[i] + gm1/g*(U3[i] - g/2.0*U2[i]*U2[i]/U1[i]);
+      F3[i] = g*U2[i]*U3[i]/U1[i] - g*gm1/2.0*U2[i]*U2[i]*U2[i]/(U1[i]*U1[i]);
+      //printf("pt %3d:  %7.3f %7.3f %7.3f\n",i, F1[i], F2[i], F3[i]);
+    }
+
+  return 0;
+}
+
+
+
+
