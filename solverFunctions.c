@@ -279,35 +279,30 @@ int  q1dSolveCons(int maxiter,const int nn, double * x, double * A, double * lnA
   {
 
     //Calc Fluxes
-    printf("\nFluxes =\n");
-    printf("pt %3s: %7s %7s %7s %7s\n","itr", "    F1", "    F2", "    F3", "    J2");
+    //printf("\nFluxes =\n");
+    //printf("pt %3s: %7s %7s %7s %7s\n","itr", "    F1", "    F2", "    F3", "    J2");
     for (i=0; i < nn-1; i++)
     {
       F1[i] = U2[i];
       F2[i] = U2[i]*U2[i]/U1[i] + gm1/g*(U3[i] - g/2.0*U2[i]*U2[i]/U1[i]);
       F3[i] = g*U2[i]*U3[i]/U1[i] - g*gm1/2.0*U2[i]*U2[i]*U2[i]/(U1[i]*U1[i]);
       J2[i] = 1/g*rho[i]*T[i]*(A[i+1] - A[i])/dx;
-      printf("pt %3d: %7.2f %7.3f %7.3f %7.3f\n",i, F1[i], F2[i], F3[i], J2[i]);
+      //printf("pt %3d: %7.2f %7.3f %7.3f %7.3f\n",i, F1[i], F2[i], F3[i], J2[i]);
     }
-    return maxiter;
 
 
 
     // Get Predictor Partials
-    //printf("Predictor Partials\n");
+    printf("Predictor Partials\n");
     for (i=0; i < nn-1; i++)
     {
-      drdt[i]  = -rho[i] * (V[i+1] - V[i])/dx
-                - rho[i] * V[i] * (lnA[i+1] - lnA[i])/dx
-                -   V[i] * (rho[i+1] - rho[i])/dx;
+      dU1[i] = - (F1[i+1] - F1[i]) / dx;
+      dU2[i] = - (F2[i+1] - F2[i]) / dx + J2[i];
+      dU3[i] = - (F3[i+1] - F3[i]) / dx;
 
-      dVdt[i]  = -V[i] * (V[i+1] - V[i])/dx
-                 - 1.0/gma*((T[i+1] - T[i])/dx + T[i]/rho[i]*(rho[i+1] - rho[i])/dx);
-
-      dTdt[i]  = -V[i] * (T[i+1] - T[i])/dx
-                 - (gma-1.0)*T[i]*((V[i+1] - V[i])/dx + V[i]*(lnA[i+1] - lnA[i])/dx);
-      //printf("pt %3d: %7.5f %7.5f %7.5f\n",i,drdt[i],dVdt[i],dTdt[i]);
+      printf("pt %3d: %7.5f %7.5f %7.5f\n",i, dU1[i], dU2[i], dU3[i]);
     }
+    return maxiter;
 
 
     // Get min timestep
